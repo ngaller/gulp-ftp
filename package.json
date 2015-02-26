@@ -43,6 +43,8 @@
   },
   "devDependencies": {
     "ftp-test-server": "0.0.2",
-    "mocha": "*"
+    "mocha": "*",
+    "rimraf": "^2.2.8",
+    "vinyl-fs": "^0.3.13"
   }
 }

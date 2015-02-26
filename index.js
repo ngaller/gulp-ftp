@@ -69,3 +69,5 @@ module.exports = function (options) {
 		cb();
 	});
 };
+
+module.exports.download = require('./download');

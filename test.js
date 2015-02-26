@@ -4,6 +4,8 @@ var fs = require('fs');
 var gutil = require('gulp-util');
 var Server = require('ftp-test-server');
 var ftp = require('./');
+var vfs = require('vinyl-fs');
+var rimraf = require('rimraf');
 var mockServer;
 
 before(function (done) {
@@ -54,4 +56,28 @@ it('should upload files to FTP-server', function (cb) {
 		path: __dirname + '/fixture/fixture2.txt',
 		contents: new Buffer('unicorns')
 	}));
+});
+
+it('should download files from FTP server', function(cb) {
+  var stream = ftp.download({
+    host: 'localhost', 
+    port: 3334,
+    user: 'test',
+    pass: 'test'
+  }, '/fixture');
+
+  rimraf.sync('fixture');
+  fs.mkdirSync('./fixture');
+  fs.writeFileSync('./fixture/test.txt', 'TEST DATA');
+  fs.writeFileSync('./fixture/test2.txt', 'TEST DATA');
+
+  stream.pipe(vfs.dest('./fixture/output'));
+
+  setTimeout(function() {
+    assert(fs.existsSync('fixture/output/test.txt'));
+    assert(fs.existsSync('fixture/output/test2.txt'));
+    assert.equal("TEST DATA", fs.readFileSync('fixture/output/test.txt', 'utf-8'));
+    rimraf.sync('fixture');
+    cb();
+  }, 500);
 });
